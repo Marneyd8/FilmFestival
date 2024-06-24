@@ -1,0 +1,124 @@
+@startuml film_festival
+
+skinparam Linetype ortho
+hide circle
+
+
+entity User {
+  * id <<UUID>>
+  ---
+  * userName: String
+  * email: String
+  profilePicture: URL
+  hashedPassword: String
+  salt: String
+}
+
+entity Review {
+  * id <<UUID>>
+  ---
+  * userId <<UUID>>
+  * movieId <<UUID>>
+  stars: Int
+  description: String
+  isSpoiler: Boolean
+}
+
+entity Film {
+  * id <<UUID>>
+  ---
+  * name: String
+  * originalName: String
+  * intro: String
+  picture: String
+  * publishedAt: Int
+  * runTimeMinutes: Int
+  votes: Number
+}
+
+entity Category {
+  * id <<UUID>>
+  ---
+  * name: String
+}
+
+entity FilmCategory {
+  * filmId <<UUID>>
+  * categoryId <<UUID>>
+}
+
+entity FilmParticipant {
+  * filmId <<UUID>>
+  * participantId <<UUID>>
+  * roleId <<UUID>>
+}
+
+entity Participant {
+  * id <<UUID>>
+  ---
+  * name: String
+  * surname: String
+}
+
+entity Role {
+  * id <<UUID>>
+  ---
+  * name: String
+}
+
+entity Festival {
+  * id <<UUID>>
+  ---
+  * name: String
+  * startDate: Date
+  * endDate: Date
+  rating: Double
+  totalSeats: Int
+}
+
+entity UserFestivalRating {
+  * userId: <<UUID>>
+  * festivalId: <<UUID>>
+  rating: Double
+}
+
+entity FestivalFilm {
+  * festivalId <<UUID>>
+  * filmId <<UUID>>
+}
+
+entity FestivalSeat {
+  * id <<UUID>>
+  ---
+  * userId <<UUID>>
+  * festivalId <<UUID>>
+}
+
+entity Partner {
+  * id <<UUID>>
+  ---
+  * name: String
+}
+
+entity FestivalPartner {
+  * festivalId <<UUID>>
+  * partnerId <<UUID>>
+}
+
+Film ||...|{ FilmCategory
+Category ||...o{ FilmCategory
+User ||...o{ Review
+Film ||...o{ Review
+Film ||...o{ FestivalFilm
+Festival ||...|{ FestivalFilm
+User ||...o{ FestivalSeat
+Festival ||...|{ FestivalSeat
+Partner ||...o{ FestivalPartner
+Festival ||...o{ FestivalPartner
+Participant ||...o{ FilmParticipant
+Film ||...|{ FilmParticipant
+User ||...o{ UserFestivalRating
+Festival ||...o{ UserFestivalRating
+Role ||...o{ FilmParticipant
+
+@enduml

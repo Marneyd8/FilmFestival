@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String   @id
+  email    String   @unique
+  name     String
+  password String
+  votes    Film[]
+  reviews  Review[]
+  seats    Seat[]
+  isAdmin  Boolean
+}
+
+model Film {
+  id             Int               @id @default(autoincrement())
+  name           String
+  originalName   String
+  intro          String
+  publishedAt    Int
+  runTimeMinutes Int
+  voters         User[]
+  reviews        Review[]
+  category       Category          @relation(fields: [categoryID], references: [id], onDelete: Cascade)
+  categoryID     Int
+  participants   FilmParticipant[]
+}
+
+model Review {
+  id          Int     @id @default(autoincrement())
+  reviewed    Film    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  reviewer    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  movieId     Int
+  stars       Int
+  description String
+  isSpoiler   Boolean
+}
+
+model Category {
+  id    Int    @id @default(autoincrement())
+  name  String
+  films Film[]
+}
+
+model Participant {
+  id           Int               @id @default(autoincrement())
+  name         String
+  partipations FilmParticipant[]
+}
+
+model FilmParticipant {
+  participant   Participant @relation(fields: [participantId], references: [id], onDelete: Restrict)
+  participantId Int
+  film          Film        @relation(fields: [filmId], references: [id], onDelete: Restrict)
+  filmId        Int
+  role          Role
+
+  @@id([participantId, filmId])
+}
+
+model Seat {
+  id            Int     @id // not deafult because we know how many seats we have beforhand
+  row           Int
+  col           Int
+  reservation   User?   @relation(fields: [reservationID], references: [id], onDelete: Restrict)
+  reservationID String?
+}
+
+//feel free to add more
+enum Role {
+  DIRECTOR
+  SCREENWRITER
+  ACTOR
+}
